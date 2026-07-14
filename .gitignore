@@ -2,3 +2,5 @@
 .DS_Store
 generate_audio.py
 generate_male_audio.py
+generate_codes.py
+codes_list.txt

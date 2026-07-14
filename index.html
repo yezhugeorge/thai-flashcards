@@ -32,6 +32,26 @@
 </script></head>
 <body>
 
+  <!-- ===== 激活码验证层 ===== -->
+  <div class="activation-overlay" id="activation-overlay">
+    <div class="activation-box">
+      <div class="activation-box__icon">🇹🇭</div>
+      <h2 class="activation-box__title">活人泰语点读卡</h2>
+      <p class="activation-box__subtitle">请输入激活码解锁全部内容</p>
+      <div class="activation-box__input-wrap">
+        <input type="text" class="activation-box__input" id="activation-input"
+          placeholder="THAI-XXXX-XXXX-XXXX"
+          autocomplete="off" autocapitalize="characters" spellcheck="false"
+          maxlength="18">
+      </div>
+      <button class="activation-box__btn" id="activation-btn" onclick="submitActivation()">
+        激活
+      </button>
+      <div class="activation-box__error" id="activation-error"></div>
+      <div class="activation-box__hint">💡 激活码格式：THAI-XXXX-XXXX-XXXX<br>购买后请联系卖家获取激活码</div>
+    </div>
+  </div>
+
   <!-- ===== 顶部导航栏 ===== -->
   <header class="header">
     <div class="header__logo" onclick="navigate('home')">
@@ -197,6 +217,7 @@
 
   <!-- ===== Scripts ===== -->
   <script src="js/data.js"></script>
+  <script src="js/codes.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -1414,3 +1414,134 @@ img { max-width: 100%; display: block; }
     align-items: flex-end;
   }
 }
+
+/* ===== 激活码验证层 ===== */
+.activation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+  padding: 24px;
+  transition: opacity 0.3s ease;
+}
+
+.activation-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.activation-box {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 40px 28px 32px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: activationPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes activationPop {
+  from {
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.activation-box__icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.activation-box__title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.activation-box__subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.activation-box__input-wrap {
+  margin-bottom: 16px;
+}
+
+.activation-box__input {
+  width: 100%;
+  height: 52px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1px;
+  color: var(--text);
+  background: var(--surface-alt);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+.activation-box__input:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.12);
+  background: var(--surface);
+}
+
+.activation-box__input::placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.activation-box__btn {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+}
+
+.activation-box__btn:active {
+  transform: scale(0.97);
+}
+
+.activation-box__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.activation-box__error {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #e53935;
+  min-height: 20px;
+  font-weight: 500;
+}
+
+.activation-box__hint {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}

@@ -8,6 +8,96 @@
 
   const { CATEGORIES, SENTENCES } = window.APP_DATA;
 
+  /* ===== 激活码验证 ===== */
+
+  // SHA-256 哈希（使用浏览器 Web Crypto API）
+  async function sha256(message) {
+    var msgBuffer = new TextEncoder().encode(message);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  // 检查是否已激活
+  function isActivated() {
+    return localStorage.getItem('thai_activated') === 'true';
+  }
+
+  // 提交激活码
+  async function submitActivation() {
+    var input = document.getElementById('activation-input');
+    var errorEl = document.getElementById('activation-error');
+    var btn = document.getElementById('activation-btn');
+    var raw = input.value.trim().toUpperCase();
+
+    if (!raw) {
+      errorEl.textContent = '请输入激活码';
+      return;
+    }
+
+    // 自动格式化：去掉所有非字母数字字符，重新拼接
+    var clean = raw.replace(/[^A-Z0-9]/g, '');
+    if (clean.length < 16) {
+      errorEl.textContent = '激活码长度不对，请检查格式';
+      return;
+    }
+    // 格式: THAI + 12位 = 16位
+    var code = 'THAI-' + clean.slice(4, 8) + '-' + clean.slice(8, 12) + '-' + clean.slice(12, 16);
+
+    btn.textContent = '验证中...';
+    btn.disabled = true;
+    errorEl.textContent = '';
+
+    try {
+      var hash = await sha256(code);
+      var hashes = window.ACTIVATION_HASHES || [];
+
+      if (hashes.indexOf(hash) !== -1) {
+        localStorage.setItem('thai_activated', 'true');
+        localStorage.setItem('thai_code', code);
+        var overlay = document.getElementById('activation-overlay');
+        overlay.classList.add('hidden');
+        setTimeout(function() { overlay.style.display = 'none'; }, 300);
+        initApp();
+        showToast('激活成功！欢迎使用 🎉');
+      } else {
+        errorEl.textContent = '激活码无效，请检查后重新输入';
+        input.value = '';
+        input.focus();
+      }
+    } catch (e) {
+      errorEl.textContent = '验证失败，请确保使用 HTTPS 访问';
+    }
+
+    btn.textContent = '激活';
+    btn.disabled = false;
+  }
+
+  // 初始化激活输入框
+  function initActivationInput() {
+    var input = document.getElementById('activation-input');
+    if (!input) return;
+
+    // 回车提交
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitActivation();
+      }
+    });
+
+    // 自动格式化：输入时自动加横杠
+    input.addEventListener('input', function() {
+      var val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      var formatted = '';
+      if (val.length > 0) formatted += val.substring(0, 4);
+      if (val.length > 4) formatted += '-' + val.substring(4, 8);
+      if (val.length > 8) formatted += '-' + val.substring(8, 12);
+      if (val.length > 12) formatted += '-' + val.substring(12, 16);
+      this.value = formatted;
+    });
+  }
+
   /* ===== 状态管理 ===== */
   const state = {
     currentRoute: 'home',
@@ -831,18 +921,35 @@
   window.showLargeCard = showLargeCard;
   window.closeLargeCard = closeLargeCard;
   window.closeLargeCardOnOverlay = closeLargeCardOnOverlay;
+  window.submitActivation = submitActivation;
 
   /* ===== 初始化 ===== */
-  function init() {
+
+  // 应用主体初始化（激活后执行）
+  function initApp() {
     renderHome();
     updateFavBadge();
     initSearchInput();
     loadAudioManifest();
     updateGenderToggles();
 
-    // 检查语音支持
     if (!('speechSynthesis' in window)) {
       console.warn('当前浏览器不支持语音合成 API');
+    }
+  }
+
+  // 入口：先检查激活状态
+  function init() {
+    if (isActivated()) {
+      // 已激活，隐藏激活层，启动应用
+      var overlay = document.getElementById('activation-overlay');
+      if (overlay) overlay.style.display = 'none';
+      initApp();
+    } else {
+      // 未激活，显示激活层
+      initActivationInput();
+      var input = document.getElementById('activation-input');
+      if (input) input.focus();
     }
   }
 
