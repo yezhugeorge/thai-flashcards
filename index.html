@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FF6B9D">
+  <meta name="description" content="来泰国后真的能用上的活人泰语。租房、打车、吃饭、购物、看病、交友，一点就能听，一句就能用。">
+  <title>活人泰语点读卡 🇹🇭</title>
+
+  <link rel="stylesheet" href="css/styles.css">
+<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
+<script>
+(function(){
+  try{
+    var beacon=new BeaconAction({
+      appkey:'0WEB06U85YBSLJNL',
+      versionCode:'1.0.0',
+      channelID:'share',
+      delay:1000,
+      sessionDuration:30*60*1000,
+      isOversea:false,
+      needReportRqdEvent:false
+    });
+    beacon.onDirectUserAction('preview_page_view',{
+      'url':location.href,
+      'referrer':document.referrer,
+      'title':document.title,
+      'sandbox_id':'76d8a0ba43ef4ba49ec89a4c51262739'
+    });
+  }catch(e){}
+})();
+</script></head>
+<body>
+
+  <!-- ===== 顶部导航栏 ===== -->
+  <header class="header">
+    <div class="header__logo" onclick="navigate('home')">
+      <div class="header__logo-icon">🇹🇭</div>
+      <span class="header__logo-text">活人泰语点读卡</span>
+    </div>
+    <div class="header__search-trigger" onclick="navigate('search')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>搜索泰语句子...</span>
+    </div>
+  </header>
+
+  <!-- ===== 主内容区 ===== -->
+  <main class="main">
+
+    <!-- 首页 -->
+    <div class="page active" id="page-home">
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero__tagline">🗣️ 来泰国后真的能用上的活人泰语</div>
+        <h1 class="hero__title">泰国生活<br>实用泰语点读卡</h1>
+        <p class="hero__subtitle">租房、打车、吃饭、购物、看病、交友<br>一点就能听，一句就能用。</p>
+        <div class="hero__buttons">
+          <button class="btn btn--primary" onclick="navigate('category', { id: 'daily' })">
+            <span>🚀</span> 开始学习
+          </button>
+          <button class="btn btn--secondary" onclick="scrollToCategories()">
+            <span>⭐</span> 查看全部分类
+          </button>
+        </div>
+      </section>
+
+      <!-- 分类区域 -->
+      <div id="home-categories"></div>
+
+      <!-- 推荐卡片 -->
+      <div class="featured-section">
+        <div class="featured-card">
+          <span class="featured-card__tag">🔥 必学推荐</span>
+          <h3 class="featured-card__title">100句日常用语汇总</h3>
+          <p class="featured-card__desc">打招呼 → 购物 → 点餐 → 出行 → 社交<br>5大场景100句，泰国生活全覆盖</p>
+          <button class="featured-card__btn" onclick="navigate('category', { id: 'daily' })">
+            立即查看 →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类页 -->
+    <div class="page" id="page-category">
+      <div class="page-header">
+        <button class="page-header__back" onclick="navigate('home')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div>
+          <div class="page-header__title" id="category-title"></div>
+          <div class="page-header__subtitle" id="category-subtitle"></div>
+        </div>
+      </div>
+
+      <!-- 筛选条 -->
+      <div class="filter-bar">
+        <div class="filter-section">
+          <div class="filter-label">难度</div>
+          <div class="filter-chips" id="filter-difficulty"></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">语气</div>
+          <div class="filter-chips" id="filter-tone"></div>
+        </div>
+      </div>
+
+      <!-- 句子列表 -->
+      <div class="sentence-list" id="category-sentences"></div>
+    </div>
+
+    <!-- 搜索页 -->
+    <div class="page" id="page-search">
+      <div class="page-header">
+        <button class="page-header__back" onclick="navigate('home')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="page-header__title">搜索泰语句子</div>
+      </div>
+
+      <div class="search-box">
+        <input type="text" class="search-box__input" id="search-input" placeholder="搜索中文、泰语、读音或场景..." autocomplete="off">
+        <div class="search-box__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+      </div>
+
+      <!-- 搜索建议 -->
+      <div class="search-suggestions" id="search-suggestions">
+        <div class="search-suggestions__title">💡 热门搜索</div>
+        <div class="search-suggestions__chips" id="suggestion-chips"></div>
+      </div>
+
+      <!-- 搜索结果 -->
+      <div id="search-results"></div>
+    </div>
+
+    <!-- 收藏页 -->
+    <div class="page" id="page-favorites">
+      <div class="page-header">
+        <button class="page-header__back" onclick="navigate('home')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div>
+          <div class="page-header__title">我的收藏</div>
+          <div class="page-header__subtitle" id="fav-count"></div>
+        </div>
+      </div>
+
+      <div id="favorites-content"></div>
+    </div>
+
+  </main>
+
+  <!-- ===== 底部导航 ===== -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav__item active" data-nav="home" onclick="navigate('home')">
+      <span class="bottom-nav__icon">🏠</span>
+      <span>首页</span>
+    </button>
+    <button class="bottom-nav__item" data-nav="search" onclick="navigate('search')">
+      <span class="bottom-nav__icon">🔍</span>
+      <span>搜索</span>
+    </button>
+    <button class="bottom-nav__item" data-nav="favorites" onclick="navigate('favorites')">
+      <span class="bottom-nav__icon">⭐</span>
+      <span>收藏</span>
+      <span class="bottom-nav__badge" id="fav-badge" style="display:none;">0</span>
+    </button>
+  </nav>
+
+  <!-- ===== 句子详情弹窗 ===== -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal" id="modal-content">
+      <button class="modal__close" onclick="closeModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <div class="modal__handle"></div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ===== Scripts ===== -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
