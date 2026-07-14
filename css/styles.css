@@ -1115,3 +1115,302 @@ img { max-width: 100%; display: block; }
 .text-muted { color: var(--text-tertiary); }
 .mt-16 { margin-top: 16px; }
 .mb-16 { margin-bottom: 16px; }
+
+/* ===== 性别切换按钮（顶部导航栏） ===== */
+.gender-toggle {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  background: var(--pink-light);
+  border: 1px solid var(--pink-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pink);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.gender-toggle:hover {
+  border-color: var(--pink);
+  box-shadow: var(--shadow-sm);
+}
+
+.gender-toggle.male {
+  background: var(--blue-light);
+  border-color: var(--blue-light);
+  color: var(--blue);
+}
+
+.gender-toggle.male:hover {
+  border-color: var(--blue);
+}
+
+/* ===== 弹窗内的控制区 ===== */
+.modal__controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-md);
+}
+
+.modal__control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal__control-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+/* 弹窗内性别按钮 */
+.modal__controls .gender-toggle {
+  height: 32px;
+  font-size: 12px;
+  padding: 0 12px;
+}
+
+/* ===== 速度按钮 ===== */
+.speed-row {
+  display: flex;
+  gap: 6px;
+}
+
+.speed-btn {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.speed-btn:hover {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+.speed-btn.active {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ===== 放大给对方看按钮（弹窗内） ===== */
+.modal__largecard-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+
+.modal__largecard-btn:hover {
+  background: var(--pink-light);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+/* ===== 卡片上的放大按钮 ===== */
+.icon-btn--card {
+  background: var(--surface-alt);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border);
+}
+
+.icon-btn--card:hover {
+  color: var(--purple);
+  border-color: var(--purple);
+}
+
+/* ===== 大字提示卡 ===== */
+.largecard-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.largecard-overlay.active {
+  display: flex;
+}
+
+.largecard {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px 24px;
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.largecard__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  z-index: 1;
+}
+
+.largecard__category {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.largecard__thai {
+  font-family: var(--font-thai);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+  text-align: center;
+  margin-bottom: 20px;
+  word-break: break-word;
+}
+
+.largecard__cn {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.largecard__pron {
+  font-size: 18px;
+  color: var(--purple);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.largecard__gender {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.largecard__play-btn {
+  width: 100%;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(255, 107, 157, 0.35);
+  transition: all 0.2s;
+}
+
+.largecard__play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.45);
+}
+
+.largecard__play-btn.playing {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+}
+
+.largecard__speed-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.largecard__speed-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.largecard__speed-row .speed-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+}
+
+.largecard__close-text {
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  padding: 8px;
+  cursor: pointer;
+}
+
+.largecard__close-text:hover {
+  color: var(--pink);
+}
+
+/* ===== 大字卡响应式 ===== */
+@media (min-width: 640px) {
+  .largecard__thai {
+    font-size: 52px;
+  }
+
+  .largecard__cn {
+    font-size: 26px;
+  }
+
+  .largecard__pron {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  .largecard {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 100vh;
+    align-self: flex-end;
+  }
+
+  .largecard-overlay {
+    align-items: flex-end;
+  }
+}

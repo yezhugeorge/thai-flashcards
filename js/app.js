@@ -16,6 +16,8 @@
     searchQuery: '',
     favorites: loadFavorites(),
     currentPlayingId: null,
+    voiceGender: localStorage.getItem('thai_gender') || 'female',
+    playbackSpeed: parseFloat(localStorage.getItem('thai_speed') || '1.0'),
   };
 
   /* ===== LocalStorage ===== */
@@ -122,13 +124,12 @@
 
   // 获取音频路径
   function getAudioPath(id) {
-    // 优先使用 manifest 中的自定义路径
+    var dir = state.voiceGender === 'male' ? 'audio/male/' : 'audio/';
     if (audioManifest && audioManifest[id]) {
-      const val = audioManifest[id];
-      return val.startsWith('audio/') ? val : 'audio/' + val;
+      var val = audioManifest[id];
+      return dir + val;
     }
-    // 默认路径：audio/{id}.mp3
-    return 'audio/' + id + '.mp3';
+    return dir + id + '.mp3';
   }
 
   function playAudio(id) {
@@ -189,7 +190,7 @@
   function playCustomAudio(id) {
     const audio = new Audio();
     audio.src = getAudioPath(id);
-    audio.playbackRate = 1.0;
+    audio.playbackRate = state.playbackSpeed;
 
     audio.onplay = () => {
       state.currentPlayingId = id;
@@ -271,6 +272,91 @@
     }
   }
 
+  /* ===== 性别切换 ===== */
+  function setVoiceGender(gender) {
+    stopAudio();
+    state.voiceGender = gender;
+    localStorage.setItem('thai_gender', gender);
+    showToast(gender === 'male' ? '👨 已切换男声' : '👩 已切换女声');
+    updateGenderToggles();
+  }
+
+  function toggleHeaderGender() {
+    setVoiceGender(state.voiceGender === 'male' ? 'female' : 'male');
+  }
+
+  function updateGenderToggles() {
+    var isMale = state.voiceGender === 'male';
+    document.querySelectorAll('.gender-toggle').forEach(btn => {
+      btn.classList.toggle('male', isMale);
+      var label = btn.querySelector('.gender-toggle__label');
+      if (label) label.textContent = isMale ? '👨 男声' : '👩 女声';
+    });
+  }
+
+  /* ===== 播放速度调节 ===== */
+  function setPlaybackSpeed(speed) {
+    state.playbackSpeed = speed;
+    localStorage.setItem('thai_speed', speed.toString());
+    // 实时更新正在播放的音频速度
+    if (currentAudioEl) {
+      currentAudioEl.playbackRate = speed;
+    }
+    // 更新速度按钮状态
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.classList.toggle('active', parseFloat(btn.dataset.speed) === speed);
+    });
+    var label = speed === 0.5 ? '0.5x 慢速' : speed === 0.75 ? '0.75x' : '1x 正常';
+    showToast('🎵 ' + label);
+  }
+
+  /* ===== 大字提示卡 ===== */
+  function showLargeCard(id) {
+    var s = SENTENCES.find(function(x) { return x.id === id; });
+    if (!s) return;
+
+    var cat = CATEGORIES.find(function(c) { return c.id === s.cat; });
+    var playing = state.currentPlayingId === id;
+
+    var overlay = document.getElementById('largecard-overlay');
+    var body = document.getElementById('largecard-body');
+
+    var isMale = state.voiceGender === 'male';
+    var speedLabel = state.playbackSpeed === 0.5 ? '0.5x' : state.playbackSpeed === 0.75 ? '0.75x' : '1x';
+
+    body.innerHTML = `
+      <div class="largecard__category">${cat ? cat.icon + ' ' + cat.title : ''}</div>
+      <div class="largecard__thai">${s.thai}</div>
+      <div class="largecard__cn">${s.cn}</div>
+      <div class="largecard__pron">🔊 ${s.pron}</div>
+      <div class="largecard__gender">${isMale ? '👨 男声用语' : '👩 女声用语'} · ${speedLabel}</div>
+      <button class="largecard__play-btn ${playing ? 'playing' : ''}" onclick="playAudio(${s.id})">
+        ${playing ? audioWaves() + ' 播放中...' : ICONS.volume + ' 点击播放'}
+      </button>
+      <div class="largecard__speed-row">
+        <span class="largecard__speed-label">语速</span>
+        <button class="speed-btn ${state.playbackSpeed === 0.5 ? 'active' : ''}" data-speed="0.5" onclick="setPlaybackSpeed(0.5)">0.5x</button>
+        <button class="speed-btn ${state.playbackSpeed === 0.75 ? 'active' : ''}" data-speed="0.75" onclick="setPlaybackSpeed(0.75)">0.75x</button>
+        <button class="speed-btn ${state.playbackSpeed === 1.0 ? 'active' : ''}" data-speed="1.0" onclick="setPlaybackSpeed(1.0)">1x</button>
+      </div>
+      <button class="largecard__close-text" onclick="closeLargeCard()">点击关闭</button>
+    `;
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLargeCard() {
+    document.getElementById('largecard-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function closeLargeCardOnOverlay(e) {
+    if (e.target === document.getElementById('largecard-overlay')) {
+      closeLargeCard();
+    }
+  }
+
   function updatePlayButton(id, playing) {
     // 卡片上的小播放按钮
     document.querySelectorAll(`[data-play="${id}"]`).forEach(btn => {
@@ -290,6 +376,16 @@
         modalPlayBtn.innerHTML = audioWaves() + ' 播放中...';
       } else {
         modalPlayBtn.innerHTML = ICONS.volume + ' 点击播放泰语发音';
+      }
+    }
+    // 大字卡内的播放按钮
+    const largeCardPlayBtn = document.querySelector('#largecard-body .largecard__play-btn');
+    if (largeCardPlayBtn) {
+      largeCardPlayBtn.classList.toggle('playing', playing);
+      if (playing) {
+        largeCardPlayBtn.innerHTML = audioWaves() + ' 播放中...';
+      } else {
+        largeCardPlayBtn.innerHTML = ICONS.volume + ' 点击播放';
       }
     }
   }
@@ -461,6 +557,11 @@
               <span class="play-icon">${ICONS.play}</span>
               ${audioWaves()}
             </button>
+            <button class="icon-btn icon-btn--card" 
+              onclick="event.stopPropagation(); showLargeCard(${s.id})"
+              title="放大给对方看">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+            </button>
             <button class="icon-btn icon-btn--fav ${favActive}" data-fav="${s.id}"
               onclick="event.stopPropagation(); toggleFav(${s.id})"
               title="收藏">
@@ -580,6 +681,7 @@
     const cat = CATEGORIES.find(c => c.id === s.cat);
     const favActive = isFav(s.id) ? 'active' : '';
     const playing = state.currentPlayingId === s.id ? 'playing' : '';
+    const isMale = state.voiceGender === 'male';
 
     const body = document.getElementById('modal-body');
     body.innerHTML = `
@@ -587,10 +689,32 @@
       <div class="modal__cn">${s.cn}</div>
       <div class="modal__pron">🔊 ${s.pron}</div>
 
+      <div class="modal__controls">
+        <div class="modal__control-group">
+          <span class="modal__control-label">声音</span>
+          <button class="gender-toggle ${isMale ? 'male' : ''}" onclick="setVoiceGender('${isMale ? 'female' : 'male'}'); openModal(${s.id})">
+            <span class="gender-toggle__label">${isMale ? '👨 男声' : '👩 女声'}</span>
+          </button>
+        </div>
+        <div class="modal__control-group">
+          <span class="modal__control-label">语速</span>
+          <div class="speed-row">
+            <button class="speed-btn ${state.playbackSpeed === 0.5 ? 'active' : ''}" data-speed="0.5" onclick="setPlaybackSpeed(0.5)">0.5x</button>
+            <button class="speed-btn ${state.playbackSpeed === 0.75 ? 'active' : ''}" data-speed="0.75" onclick="setPlaybackSpeed(0.75)">0.75x</button>
+            <button class="speed-btn ${state.playbackSpeed === 1.0 ? 'active' : ''}" data-speed="1.0" onclick="setPlaybackSpeed(1.0)">1x</button>
+          </div>
+        </div>
+      </div>
+
       <button class="modal__play-btn ${playing}" onclick="playAudio(${s.id})">
         ${state.currentPlayingId === s.id
           ? `${audioWaves()} 播放中...`
           : `${ICONS.volume} 点击播放泰语发音`}
+      </button>
+
+      <button class="modal__largecard-btn" onclick="showLargeCard(${s.id})">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+        放大给对方看
       </button>
 
       <div class="modal__info">
@@ -701,6 +825,12 @@
   window.shareSentence = shareSentence;
   window.quickSearch = quickSearch;
   window.scrollToCategories = scrollToCategories;
+  window.setVoiceGender = setVoiceGender;
+  window.toggleHeaderGender = toggleHeaderGender;
+  window.setPlaybackSpeed = setPlaybackSpeed;
+  window.showLargeCard = showLargeCard;
+  window.closeLargeCard = closeLargeCard;
+  window.closeLargeCardOnOverlay = closeLargeCardOnOverlay;
 
   /* ===== 初始化 ===== */
   function init() {
@@ -708,6 +838,7 @@
     updateFavBadge();
     initSearchInput();
     loadAudioManifest();
+    updateGenderToggles();
 
     // 检查语音支持
     if (!('speechSynthesis' in window)) {
